@@ -1,0 +1,49 @@
+first_char=$(echo $1 | cut -b 1)
+if [ $first_char == ':' ]; then
+id=$(echo $1|tr -d ':')
+wget -q -O output.txt "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=$id&rettype=gb&retmode=text"
+else
+find ./spike.gp | xargs cat > output.txt
+fi
+
+sed -n '1p' output.txt > head.txt
+cat output.txt | tr -s ' ' |egrep "^ [0-9]+ [a-z]" | tr -d '\n' | tr '[a-z]' '[A-Z]' > ass.txt
+sed -i 's%[^[:alpha:]]%%g' ass.txt
+
+lengte=$(cat output.txt | head -1 | tr -s ' ' | cut -d ' ' -f3)
+
+cat ass.txt | cut -b 1-10 > seq2.txt
+echo '...' >> seq2.txt
+cat ass.txt | rev| cut -b 1-10 | rev >> seq2.txt
+cat seq2.txt | tr -d '\n' > seq.txt
+sequ=$(cat seq.txt)
+
+for ((i = 0 ; i < $4 ; i++)); do
+e=$(echo $2)
+b=$(echo $3)
+
+letter=$((e + i*b))
+cat ass.txt | cut -b $letter >> wa.txt
+
+done
+word=$(cat wa.txt | tr -d '\n' )
+
+
+echo "sequence: $sequ"
+echo "length: $lengte"
+echo "word: $word"
+
+
+
+rm output.txt
+rm seq2.txt
+rm seq.txt
+rm wa.txt
+
+
+
+
+
+
+
+

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#check syntax variables
+if [[ "$#" -lt 1 || "$#" -gt 2 ]];
+then
+echo "Syntaxis: rvf patroon [bestand]" >&2
+exit 1 
+fi
+
+#check if 2nd var is file
+if [ $# -eq 2 ];then
+if [[ ! -f $2 || ! -r $2 ]];
+then 
+echo "rvf: bestand \""$2"\" bestaat niet of is onleesbaar" >&2
+exit 2 
+fi 
+fi
+#check if word has match
+word=$1
+lengte=${#1}
+
+medeklinkers=$(echo $1|sed "s/[aeiou]/[aeiou]/g")
+
+cat ${2:--}| egrep "^$medeklinkers$" >medeklinkers.txt
+
+egrep -v "$word" medeklinkers.txt|sort >match.txt
+
+if [[ ! -s match.txt ]];then
+echo "rvf: geen uitdrukkingen gevonden die matchen met \"$word\"" >&2
+exit 3
+else
+cat match.txt
+fi

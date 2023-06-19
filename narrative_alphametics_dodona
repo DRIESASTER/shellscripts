@@ -1,0 +1,20 @@
+getal=$1
+shift
+alphabet=$(echo $@|sed "s/./&\n/g"|grep -v '^[[:space:]]*$'|sort|uniq|tr "\n" " "|sed "s/ //g")
+
+formatted=$(echo $@|sed "s/ / + /g"|rev|sed "s/+/=/"|rev)
+
+vervang=$(echo "$formatted" |tr "$alphabet" "$getal")
+
+last=$(echo "${@: -1}"|tr "$alphabet" "$getal")
+som=$(echo $vervang|sed "s/= $last//"|tr -d " "|bc)
+
+echo "$alphabet -> $getal"
+echo "$formatted"
+echo "$vervang"
+
+if [ $last = $som ]; then
+exit 0
+else
+exit 1
+fi
